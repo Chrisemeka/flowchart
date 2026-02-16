@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import TransactionTable from '@/components/TransactionTable';
+import TransactionAnalysis from '@/components/TransactionAnalysis';
 
 export default function Home() {
   const [statementData, setStatementData] = useState<any>(null);
@@ -41,7 +42,10 @@ export default function Home() {
           </div>
 
           {statementData.transactions ? (
-            <TransactionTable transactions={statementData.transactions} />
+            <>
+              <TransactionAnalysis transactions={statementData.transactions} />
+              <TransactionTable transactions={statementData.transactions} />
+            </>
           ) : (
             <div className="p-8 bg-white text-center text-gray-500 border rounded-b-lg shadow-sm">
               Transactions saved to database. ID: {statementData.statementId}

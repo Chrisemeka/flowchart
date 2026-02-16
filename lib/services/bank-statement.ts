@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { parseBankStatement } from '@/lib/flowchart-engine';
 import { generateTransactionHash } from '@/utils/hash';
 import { User } from '@supabase/supabase-js';
+import { categorizeTransactions } from './gemini';
 
 export interface ProcessedStatementResult {
     status: 'success' | 'error';
@@ -63,8 +64,15 @@ export async function processBankStatement(
 
         const statement = statementResult.data;
 
-        // 5. Prepare and Hash Transactions
-        const transactionsToInsert = prepareTransactions(transactions, statement.id);
+        // 5. Categorize Transacitons
+        const categories = await categorizeTransactions(transactions.map((t, index) => ({
+            id: index, // Temporary ID for mapping
+            description: t.originalText || t.description,
+            amount: t.amount
+        })));
+
+        // 6. Prepare and Hash Transactions
+        const transactionsToInsert = prepareTransactions(transactions, statement.id, categories);
 
         // 6. Insert Transactions into Supabase
         const txError = await saveTransactionsToDb(supabase, transactionsToInsert);
@@ -134,15 +142,15 @@ async function saveStatementToDb(
         .single();
 }
 
-function prepareTransactions(transactions: any[], statementId: string) {
-    return transactions.map((t: any) => ({
+function prepareTransactions(transactions: any[], statementId: string, categories: Record<string, string> = {}) {
+    return transactions.map((t: any, index: number) => ({
         statement_id: statementId,
         amount: t.amount,
         type: t.type,
         date: new Date(t.date).toISOString(),
         narration: t.originalText || t.description,
         clean_name: t.description,
-        category: 'Uncategorized', // Default until we add AI categorization
+        category: categories[index] || 'Uncategorized', // Use Gemini category or default
         hash: generateTransactionHash({
             date: t.date,
             amount: t.amount,

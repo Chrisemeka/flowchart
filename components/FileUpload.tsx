@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 
-export default function FileUpload() {
+interface FileUploadProps {
+  onUploadSuccess: (data: any) => void;
+}
+
+export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Handle file selection
@@ -13,7 +16,6 @@ export default function FileUpload() {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
       setError(null);
-      setResult(null);
     }
   };
 
@@ -23,7 +25,6 @@ export default function FileUpload() {
 
     setLoading(true);
     setError(null);
-    setResult(null);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -37,10 +38,10 @@ export default function FileUpload() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to parse PDF');
+        throw new Error(data.message || 'Failed to parse PDF');
       }
 
-      setResult(data);
+      onUploadSuccess(data);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -49,13 +50,13 @@ export default function FileUpload() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-100">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Flowchart Engine Test</h2>
-      
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-100 mb-8">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Statement</h2>
+
       {/* File Input Area */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Upload Bank Statement (PDF)
+          Select Bank Statement (PDF)
         </label>
         <div className="flex items-center gap-4">
           <input
@@ -74,42 +75,19 @@ export default function FileUpload() {
             onClick={handleUpload}
             disabled={!file || loading}
             className={`px-6 py-2 rounded-lg font-medium text-white transition-colors
-              ${!file || loading 
-                ? 'bg-gray-300 cursor-not-allowed' 
+              ${!file || loading
+                ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'}`}
           >
-            {loading ? 'Parsing...' : 'Analyze'}
+            {loading ? 'Processing...' : 'Upload & Analyze'}
           </button>
         </div>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="p-4 mb-6 bg-red-50 text-red-700 rounded-lg border border-red-200">
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
           <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {/* Results Display */}
-      {result && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-green-50 text-green-800 rounded-lg border border-green-200">
-            <div>
-              <span className="font-semibold">Detected Bank:</span> {result.bank}
-            </div>
-            <div>
-              <span className="font-semibold">Transactions:</span> {result.transactions?.length || 0}
-            </div>
-          </div>
-
-          <div className="border rounded-lg overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b font-medium text-gray-700 text-sm">
-              Parsed Data (JSON)
-            </div>
-            <pre className="p-4 bg-gray-900 text-green-400 text-xs overflow-auto max-h-96">
-              {JSON.stringify(result, null, 2)}
-            </pre>
-          </div>
         </div>
       )}
     </div>

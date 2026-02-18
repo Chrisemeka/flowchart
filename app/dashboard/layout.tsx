@@ -40,6 +40,12 @@ export default function DashboardLayout({
                                 >
                                     Statement History
                                 </Link>
+                                <Link
+                                    href="/dashboard/compare"
+                                    className={`${isActive('/dashboard/compare')} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                                >
+                                    Compare
+                                </Link>
                             </div>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -55,7 +61,8 @@ export default function DashboardLayout({
                         <h1 className="text-3xl font-bold leading-tight text-gray-900">
                             {pathname === '/dashboard' ? 'Upload Statement' :
                                 pathname === '/dashboard/history' ? 'Statement History' :
-                                    'Statement Details'}
+                                    pathname === '/dashboard/compare' ? 'Compare Statements' :
+                                        'Statement Details'}
                         </h1>
                     </div>
                 </header>

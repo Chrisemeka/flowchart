@@ -63,7 +63,9 @@ export async function getStatementDetails(statementId: string) {
             statementId: statement.id,
             transactionCount: transactions.length,
             transactions: transactions,
-            bank: statement.bank_name
+            bank: statement.bank_name,
+            month: statement.month,
+            year: statement.year
         }
     };
 }

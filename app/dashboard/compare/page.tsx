@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { getUserStatements, getStatementDetails } from '@/app/actions/statement-actions';
 import ComparisonSelector from '@/components/ComparisonSelector';
 import ComparisonView from '@/components/ComparisonView';
+import Image from 'next/image';
+
 
 export default function ComparePage() {
     const [statements, setStatements] = useState<any[]>([]);
@@ -79,8 +81,15 @@ export default function ComparePage() {
             )}
 
             {!loadingData && (!dataA || !dataB) && (
-                <div className="text-center p-12 text-muted-foreground bg-muted/10 rounded-lg border border-dashed border-border font-light">
-                    Select two statements to begin comparison
+                <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground bg-muted/10 rounded-lg border border-dashed border-border font-light">
+                    <Image
+                        src="/undraw_no-data_ig65.svg"
+                        alt="No statements"
+                        width={200}
+                        height={200}
+                        className="w-48 h-auto mb-4 opacity-80"
+                    />
+                    <p className="text-lg">Select two statements to begin comparison</p>
                 </div>
             )}
         </div>

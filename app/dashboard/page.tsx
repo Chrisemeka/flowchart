@@ -4,6 +4,8 @@ import { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import TransactionTable from '@/components/TransactionTable';
 import TransactionAnalysis from '@/components/TransactionAnalysis';
+import Image from 'next/image';
+
 
 export default function Home() {
   const [statementData, setStatementData] = useState<any>(null);
@@ -17,8 +19,18 @@ export default function Home() {
   return (
     <>
       <div className="max-w-4xl mx-auto text-center mb-10">
-        <p className="mt-3 text-lg text-gray-500">
-          Upload a Nigerian Bank Statement (Access Bank) to test the parser logic.
+        <div className="flex justify-center mb-6">
+          <Image
+              src="/undraw_add-files_s0fz.svg"
+              alt="No File Added"
+              width={200}
+              height={200}
+              className="w-48 h-auto mb-4 opacity-80"
+          />
+        </div>
+        <h2 className="text-2xl font-light text-foreground">Analyze Your Statements</h2>
+        <p className="mt-3 text-lg text-muted-foreground font-light">
+          Upload a Nigerian Bank Statement to visualize your finances.
         </p>
       </div>
 

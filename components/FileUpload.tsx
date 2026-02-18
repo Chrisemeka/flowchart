@@ -82,7 +82,7 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <span className="text-sm font-medium text-foreground">Click to upload or drag and drop</span>
-                <span className="text-xs text-muted-foreground">PDF files only (Access Bank supported)</span>
+                <span className="text-xs text-muted-foreground">PDF files only</span>
               </div>
             )}
           </div>

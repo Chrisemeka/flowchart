@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function DashboardLayout({
     children,
@@ -31,9 +32,16 @@ export default function DashboardLayout({
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="flex-shrink-0 flex items-center">
-                                <Link href="/dashboard">
+                                <Link href="/dashboard" className="flex items-center gap-2">
+                                    <Image
+                                        src="/undraw_visual-data_1eya.svg"
+                                        alt="Flowchart Logo"
+                                        width={32}
+                                        height={32}
+                                        className="w-8 h-8"
+                                    />
                                     <span className="text-xl font-bold tracking-tight text-foreground">
-                                        Flowchart <span className="text-primary">Engine</span>
+                                        Flow<span className="text-primary">chart</span>
                                     </span>
                                 </Link>
                             </div>

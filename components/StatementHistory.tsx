@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getUserStatements } from '@/app/actions/statement-actions';
 import { useQuery } from '@tanstack/react-query';
 import { FileText, Calendar, CreditCard } from 'lucide-react';
+import Image from 'next/image';
 
 interface Statement {
     id: string;
@@ -44,10 +45,22 @@ export default function StatementHistory() {
         );
     }
 
+    // ... (imports)
+
+    // ... (component start)
+
     if (statements.length === 0) {
         return (
-            <div className="text-center py-12 border border-dashed border-border rounded-lg bg-muted/10">
-                <p className="text-muted-foreground font-light">No statements uploaded yet.</p>
+            <div className="flex flex-col items-center justify-center py-16 border border-dashed border-border rounded-lg bg-muted/10">
+                <Image
+                    src="/undraw_no-data_ig65.svg"
+                    alt="No statements"
+                    width={200}
+                    height={200}
+                    className="w-48 h-auto mb-4 opacity-80"
+                />
+                <p className="text-muted-foreground font-light text-lg">No statements uploaded yet.</p>
+                <p className="text-sm text-muted-foreground mt-2">Upload a statement to get started.</p>
             </div>
         );
     }

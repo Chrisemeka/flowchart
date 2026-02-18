@@ -8,7 +8,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Flowchart Engine",
+  title: "Flowchart",
   description: "Manage and analyze your financial statements",
 };
 

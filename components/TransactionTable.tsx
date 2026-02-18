@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useTransition } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { TRANSACTION_CATEGORIES } from '../lib/constants';
+import { updateTransactionCategory } from '@/app/actions/transaction-actions';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface Transaction {
     id?: string;
@@ -15,11 +17,14 @@ interface Transaction {
 
 interface TransactionTableProps {
     transactions: Transaction[];
+    statementId?: string;
 }
 
-export default function TransactionTable({ transactions }: TransactionTableProps) {
+export default function TransactionTable({ transactions, statementId }: TransactionTableProps) {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
+    const [isPending, startTransition] = useTransition();
+    const queryClient = useQueryClient();
     const itemsPerPage = 20;
 
     // Filter transactions based on selected category
@@ -48,6 +53,24 @@ export default function TransactionTable({ transactions }: TransactionTableProps
 
     const handleNext = () => {
         setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    };
+
+    const handleCategoryChange = (transactionId: string | undefined, newCategory: string) => {
+        if (!transactionId) return;
+
+        startTransition(async () => {
+            try {
+                const result = await updateTransactionCategory(transactionId, newCategory);
+                if (result?.error) {
+                    alert(result.error);
+                } else {
+                    queryClient.invalidateQueries({ queryKey: ['statement'] });
+                }
+            } catch (error) {
+                console.error("Failed to update category", error);
+                alert("Failed to update category");
+            }
+        });
     };
 
     return (
@@ -90,9 +113,19 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                                         {t.clean_name || t.narration || t.description || 'No description'}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                            {t.category || 'Uncategorized'}
-                                        </span>
+                                        <select
+                                            value={t.category || ''}
+                                            onChange={(e) => handleCategoryChange(t.id, e.target.value)}
+                                            disabled={isPending}
+                                            className={`bg-blue-50 border border-blue-300 text-blue-900 text-xs rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 ${!t.category ? 'text-gray-400' : ''}`}
+                                        >
+                                            <option value="" disabled>Select Category</option>
+                                            {TRANSACTION_CATEGORIES.map((category) => (
+                                                <option key={category} value={category}>
+                                                    {category}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${t.type === 'CREDIT'

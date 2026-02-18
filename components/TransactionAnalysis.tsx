@@ -43,8 +43,7 @@ export default function TransactionAnalysis({ transactions }: TransactionAnalysi
                 expense += amount;
 
                 // For line chart - aggregate daily expenses
-                const dateKey = new Date(t.date).toLocaleDateString(); // Simple date key
-                // Or better, keep ISO date for sorting and format later
+                const dateKey = new Date(t.date).toLocaleDateString();
                 const isoDate = new Date(t.date).toISOString().split('T')[0];
                 dailyExpenses[isoDate] = (dailyExpenses[isoDate] || 0) + amount;
             }
@@ -103,7 +102,7 @@ export default function TransactionAnalysis({ transactions }: TransactionAnalysi
                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                             </Pie>
-                            <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                            <Tooltip formatter={(value: number | undefined) => formatCurrency(value || 0)} />
                             <Legend />
                         </PieChart>
                     </ResponsiveContainer>
@@ -145,7 +144,7 @@ export default function TransactionAnalysis({ transactions }: TransactionAnalysi
                                 tick={{ fontSize: 12 }}
                             />
                             <Tooltip
-                                formatter={(value: number) => [formatCurrency(value), 'Spent']}
+                                formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Spent']}
                                 labelStyle={{ color: '#374151' }}
                             />
                             {/* <Legend /> */}

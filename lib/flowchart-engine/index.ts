@@ -6,6 +6,7 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { detectSource } from './utils';
 import { parseAccessBankPDF } from './parsers/access';
 import { parsePalmPayPDF } from './parsers/palmpay';
+import { parseOPayPDF } from './parsers/opay';
 
 export async function parseBankStatement(fileBuffer: ArrayBuffer) {
   try {
@@ -73,6 +74,12 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
           status: 'success',
           bank: bankName,
           transactions: parsePalmPayPDF(pageTexts)
+        };
+      case 'OPay': // <--- NEW
+        return {
+          status: 'success',
+          bank: bankName,
+          transactions: parseOPayPDF(pageTexts)
         };
       default:
         return {

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import PageInfo from '@/components/PageInfo';
 
 export default function DashboardLayout({
     children,
@@ -141,13 +142,19 @@ export default function DashboardLayout({
 
             <div className="py-10">
                 <header>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
                         <h1 className="text-3xl font-bold leading-tight text-foreground tracking-tight">
                             {pathname === '/dashboard' ? 'Upload Statement' :
                                 pathname === '/dashboard/history' ? 'Statement History' :
                                     pathname === '/dashboard/compare' ? 'Compare Statements' :
                                         'Statement Details'}
                         </h1>
+                        <PageInfo content={
+                            pathname === '/dashboard' ? "Upload your bank statement PDF here. The system will parse the transactions from Access Bank statements and provide a visual analysis of your income and expenses." :
+                                pathname === '/dashboard/history' ? "View a chronological list of all your uploaded statements. Click on any item to view its detailed breakdown, including transaction lists and charts." :
+                                    pathname === '/dashboard/compare' ? "Select two statements from your history to compare them side-by-side. This is useful for tracking changes in your spending habits or income over time." :
+                                        "View detailed analysis for this specific statement, including categorization of expenses and income sources."
+                        } />
                     </div>
                 </header>
                 <main>

@@ -1,5 +1,5 @@
 import React, { useMemo, useTransition } from 'react';
-import { ChevronRight, ChevronLeft } from 'lucide-react'
+import { ChevronRight, ChevronLeft, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { TRANSACTION_CATEGORIES } from '../lib/constants';
 import { updateTransactionCategory } from '@/app/actions/transaction-actions';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,32 +20,49 @@ interface TransactionTableProps {
     statementId?: string;
 }
 
+type SortDirection = 'asc' | 'desc';
+
 export default function TransactionTable({ transactions, statementId }: TransactionTableProps) {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
+    const [sortDirection, setSortDirection] = React.useState<SortDirection>('desc');
     const [isPending, startTransition] = useTransition();
     const queryClient = useQueryClient();
     const itemsPerPage = 20;
 
-    // Filter transactions based on selected category
-    const filteredTransactions = useMemo(() => {
+    // Filter and Sort transactions
+    const processedTransactions = useMemo(() => {
         if (!transactions) return [];
-        if (selectedCategory === 'All') return transactions;
-        return transactions.filter(t => t.category === selectedCategory);
-    }, [transactions, selectedCategory]);
 
-    // Reset page when category changes
+        let result = [...transactions];
+
+        // Filter
+        if (selectedCategory !== 'All') {
+            result = result.filter(t => t.category === selectedCategory);
+        }
+
+        // Sort
+        result.sort((a, b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+
+        return result;
+    }, [transactions, selectedCategory, sortDirection]);
+
+    // Reset page when category or sort changes
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [selectedCategory]);
+    }, [selectedCategory, sortDirection]);
 
     if (!transactions || transactions.length === 0) {
         return <div className="text-center p-8 text-muted-foreground font-light">No transactions to display.</div>;
     }
 
-    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+    const totalPages = Math.ceil(processedTransactions.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentTransactions = filteredTransactions.slice(startIndex, startIndex + itemsPerPage);
+    const currentTransactions = processedTransactions.slice(startIndex, startIndex + itemsPerPage);
 
     const handlePrevious = () => {
         setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -53,6 +70,10 @@ export default function TransactionTable({ transactions, statementId }: Transact
 
     const handleNext = () => {
         setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    };
+
+    const toggleSort = () => {
+        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     };
 
     const handleCategoryChange = (transactionId: string | undefined, newCategory: string) => {
@@ -97,7 +118,12 @@ export default function TransactionTable({ transactions, statementId }: Transact
                 <table className="w-full text-sm text-left text-muted-foreground">
                     <thead className="text-xs text-muted-foreground uppercase border-b border-border font-medium tracking-wider">
                         <tr>
-                            <th scope="col" className="px-4 py-3 font-medium">Date</th>
+                            <th scope="col" className="px-4 py-3 font-medium cursor-pointer hover:bg-muted/50 transition-colors" onClick={toggleSort}>
+                                <div className="flex items-center gap-1">
+                                    Date
+                                    {sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                                </div>
+                            </th>
                             <th scope="col" className="px-4 py-3 font-medium">Description</th>
                             <th scope="col" className="px-4 py-3 font-medium">Category</th>
                             <th scope="col" className="px-4 py-3 font-medium">Type</th>

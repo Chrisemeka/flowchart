@@ -2,11 +2,13 @@ import LoginButtons from '@/components/LoginButtons';
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-      <div className="z-10 w-full max-w-md items-center justify-between font-mono text-sm lg:flex flex-col gap-8 bg-white p-8 rounded-xl shadow-lg border">
-        <h1 className="text-2xl font-bold text-center text-gray-900">Welcome to Flowchart</h1>
-        <p className="text-center text-gray-500 mb-4">Sign in to manage your finances</p>
-        <LoginButtons />
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 lg:p-24 bg-background">
+      <div className="z-10 w-full max-w-md flex flex-col items-center justify-center gap-6 bg-white p-8 rounded-xl border border-border shadow-sm">
+        <h1 className="text-3xl font-light text-center text-foreground tracking-tight">Welcome to <span className="font-semibold text-primary">Flowchart</span></h1>
+        <p className="text-center text-muted-foreground font-light text-sm max-w-xs">Sign in to manage and analyze your financial statements with ease.</p>
+        <div className="w-full mt-4">
+          <LoginButtons />
+        </div>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Upload, FileText, AlertCircle } from 'lucide-react';
 
 interface FileUploadProps {
   onUploadSuccess: (data: any) => void;
@@ -50,44 +51,70 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-100 mb-8">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Upload Statement</h2>
+    <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl border border-border shadow-sm mb-12">
+      <div className="flex items-center justify-center mb-6">
+        <div className="p-3 bg-primary/10 rounded-full text-primary">
+          <Upload size={24} />
+        </div>
+      </div>
+
+      <h2 className="text-xl font-light text-foreground text-center mb-2">Upload Statement</h2>
+      <p className="text-muted-foreground text-center text-sm mb-8">
+        Upload your bank statement PDF to parse and analyze transactions.
+      </p>
 
       {/* File Input Area */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Select Bank Statement (PDF)
-        </label>
-        <div className="flex items-center gap-4">
+      <div className="mb-6 space-y-4">
+        <div className="relative group">
           <input
             type="file"
             accept=".pdf"
             onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100
-              cursor-pointer border rounded-lg p-2"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           />
-          <button
-            onClick={handleUpload}
-            disabled={!file || loading}
-            className={`px-6 py-2 rounded-lg font-medium text-white transition-colors
-              ${!file || loading
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'}`}
-          >
-            {loading ? 'Processing...' : 'Upload & Analyze'}
-          </button>
+          <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${file ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-muted/30'}`}>
+            {file ? (
+              <div className="flex flex-col items-center gap-2">
+                <FileText className="text-primary w-8 h-8" />
+                <span className="text-sm font-medium text-foreground">{file.name}</span>
+                <span className="text-xs text-muted-foreground">Click to change</span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-sm font-medium text-foreground">Click to upload or drag and drop</span>
+                <span className="text-xs text-muted-foreground">PDF files only (Access Bank supported)</span>
+              </div>
+            )}
+          </div>
         </div>
+
+        <button
+          onClick={handleUpload}
+          disabled={!file || loading}
+          className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2
+            ${!file || loading
+              ? 'bg-muted text-muted-foreground cursor-not-allowed'
+              : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md'}`}
+        >
+          {loading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
+              Processing...
+            </>
+          ) : (
+            'Upload & Analyze'
+          )}
+        </button>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
-          <strong>Error:</strong> {error}
+        <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-100 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div className="text-sm flex-1">
+            <strong className="font-medium block mb-1">Upload Failed</strong>
+            {error}
+          </div>
         </div>
       )}
     </div>

@@ -26,12 +26,12 @@ export default function Home() {
 
       {statementData && (
         <div className="max-w-5xl mx-auto mt-8">
-          <div className="bg-white px-6 py-4 rounded-t-lg border-b border-gray-200 flex justify-between items-center shadow-sm">
+          <div className="bg-white px-4 py-4 sm:px-6 rounded-t-lg border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-sm gap-4 sm:gap-0">
             <div>
               <h3 className="text-lg font-medium text-gray-900">Parsed Statement</h3>
               {statementData.bank && <p className="text-sm text-gray-500 max-w-sm overflow-hidden text-ellipsis whitespace-nowrap">{statementData.bank}</p>}
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                 {statementData.transactionCount || (statementData.transactions ? statementData.transactions.length : 0)} Transactions
               </span>

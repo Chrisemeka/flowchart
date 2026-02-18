@@ -76,20 +76,20 @@ export default function ComparisonView({ statementA, statementB }: ComparisonVie
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Statement A Summary */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">{statementA.bank} ({statementA.month}/{statementA.year})</h3>
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Total Income:</span>
-                            <span className="font-medium text-green-600">{formatCurrency(dataA.income)}</span>
+                <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
+                    <h3 className="text-lg font-light text-foreground mb-4 pb-2 border-b border-border">{statementA.bank} <span className="text-sm text-muted-foreground ml-2">({statementA.month}/{statementA.year})</span></h3>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground font-light">Total Income</span>
+                            <span className="font-medium text-emerald-600">{formatCurrency(dataA.income)}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Total Expenses:</span>
-                            <span className="font-medium text-red-600">{formatCurrency(dataA.expense)}</span>
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground font-light">Total Expenses</span>
+                            <span className="font-medium text-rose-600">{formatCurrency(dataA.expense)}</span>
                         </div>
-                        <div className="border-t pt-2 flex justify-between font-semibold">
-                            <span>Net:</span>
-                            <span className={dataA.income - dataA.expense >= 0 ? "text-green-600" : "text-red-600"}>
+                        <div className="pt-3 border-t border-border flex justify-between items-center font-medium">
+                            <span className="text-foreground">Net</span>
+                            <span className={dataA.income - dataA.expense >= 0 ? "text-emerald-600" : "text-rose-600"}>
                                 {formatCurrency(dataA.income - dataA.expense)}
                             </span>
                         </div>
@@ -97,20 +97,20 @@ export default function ComparisonView({ statementA, statementB }: ComparisonVie
                 </div>
 
                 {/* Statement B Summary */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">{statementB.bank} ({statementB.month}/{statementB.year})</h3>
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Total Income:</span>
-                            <span className="font-medium text-green-600">{formatCurrency(dataB.income)}</span>
+                <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
+                    <h3 className="text-lg font-light text-foreground mb-4 pb-2 border-b border-border">{statementB.bank} <span className="text-sm text-muted-foreground ml-2">({statementB.month}/{statementB.year})</span></h3>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground font-light">Total Income</span>
+                            <span className="font-medium text-emerald-600">{formatCurrency(dataB.income)}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Total Expenses:</span>
-                            <span className="font-medium text-red-600">{formatCurrency(dataB.expense)}</span>
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground font-light">Total Expenses</span>
+                            <span className="font-medium text-rose-600">{formatCurrency(dataB.expense)}</span>
                         </div>
-                        <div className="border-t pt-2 flex justify-between font-semibold">
-                            <span>Net:</span>
-                            <span className={dataB.income - dataB.expense >= 0 ? "text-green-600" : "text-red-600"}>
+                        <div className="pt-3 border-t border-border flex justify-between items-center font-medium">
+                            <span className="text-foreground">Net</span>
+                            <span className={dataB.income - dataB.expense >= 0 ? "text-emerald-600" : "text-rose-600"}>
                                 {formatCurrency(dataB.income - dataB.expense)}
                             </span>
                         </div>
@@ -119,8 +119,8 @@ export default function ComparisonView({ statementA, statementB }: ComparisonVie
             </div>
 
             {/* Category Comparison Chart */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900 mb-6">Expenditure by Category Comparison</h3>
+            <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
+                <h3 className="text-lg font-light text-foreground mb-6">Expenditure by Category Comparison</h3>
                 <div className="h-96 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -132,20 +132,30 @@ export default function ComparisonView({ statementA, statementB }: ComparisonVie
                                 bottom: 5,
                             }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
                             <XAxis
                                 dataKey="name"
-                                interval={0}
+                                interval="preserveStartEnd"
                                 angle={-45}
                                 textAnchor="end"
                                 height={80}
-                                tick={{ fontSize: 12 }}
+                                tick={{ fontSize: 12, fill: '#737373' }}
+                                axisLine={false}
+                                tickLine={false}
                             />
-                            <YAxis tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`} />
-                            <Tooltip formatter={(value: number | undefined) => formatCurrency(value || 0)} />
-                            <Legend />
-                            <Bar dataKey={statementA.bank} fill="#8884d8" name={`${statementA.bank} (${statementA.month}/${statementA.year})`} />
-                            <Bar dataKey={statementB.bank} fill="#82ca9d" name={`${statementB.bank} (${statementB.month}/${statementB.year})`} />
+                            <YAxis
+                                tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`}
+                                tick={{ fontSize: 12, fill: '#737373' }}
+                                axisLine={false}
+                                tickLine={false}
+                            />
+                            <Tooltip
+                                formatter={(value: number | undefined) => formatCurrency(value || 0)}
+                                contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e5e5', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
+                            />
+                            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                            <Bar dataKey={statementA.bank} fill="#6c63ff" radius={[4, 4, 0, 0]} name={`${statementA.bank} (${statementA.month}/${statementA.year})`} />
+                            <Bar dataKey={statementB.bank} fill="#c7c4fc" radius={[4, 4, 0, 0]} name={`${statementB.bank} (${statementB.month}/${statementB.year})`} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

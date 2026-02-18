@@ -49,7 +49,7 @@ export default function ComparePage() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Compare Statements</h1>
+            <h1 className="text-2xl font-light text-foreground mb-6">Compare Statements</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <ComparisonSelector
@@ -70,7 +70,7 @@ export default function ComparePage() {
 
             {loadingData && (
                 <div className="flex justify-center p-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
             )}
 
@@ -79,7 +79,7 @@ export default function ComparePage() {
             )}
 
             {!loadingData && (!dataA || !dataB) && (
-                <div className="text-center p-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <div className="text-center p-12 text-muted-foreground bg-muted/10 rounded-lg border border-dashed border-border font-light">
                     Select two statements to begin comparison
                 </div>
             )}

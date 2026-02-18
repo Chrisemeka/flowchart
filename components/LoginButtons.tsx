@@ -22,7 +22,7 @@ export default function LoginButtons() {
     <div className="flex flex-col gap-4 w-full max-w-sm">
       <button
         onClick={() => handleLogin('google')}
-        className="flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-4 rounded-lg transition-all"
+        className="flex items-center justify-center gap-3 bg-white border border-border text-foreground hover:bg-muted/30 font-medium py-3 px-4 rounded-lg transition-all shadow-sm hover:shadow-md"
       >
         <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
         Continue with Google

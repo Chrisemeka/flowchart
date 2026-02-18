@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+import { TRANSACTION_CATEGORIES } from '../constants';
+
 export async function categorizeTransactions(transactions: any[]) {
     if (!process.env.GEMINI_API_KEY) {
         console.error('GEMINI_API_KEY is not set');
@@ -20,18 +22,7 @@ export async function categorizeTransactions(transactions: any[]) {
     You are an expert financial assistant specializing in Nigerian bank statements. Your task is to categorize bank transactions strictly into one of the predefined categories based on their description, amount, and type (Debit/Credit).
 
 ALLOWED CATEGORIES (You MUST choose ONLY from this list):
-- Food & Dining
-- Groceries
-- Transport
-- Housing & Utilities
-- Shopping & Services
-- Health & Wellness
-- Subscriptions & Entertainment
-- Bank Fees & Taxes
-- Transfers (Use only if no specific purpose is mentioned)
-- Income
-- Refunds
-- Miscellaneous
+${TRANSACTION_CATEGORIES.map(c => `- ${c}`).join('\n')}
 
 RULES FOR CATEGORIZATION:
 1. Bank Fees & Taxes: Any transaction containing "VAT", "Stamp Duty", "Card Maint Fee", "SMS Alert", or "Commission" MUST be categorized as "Bank Fees & Taxes". 

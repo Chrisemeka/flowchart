@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react'
+import { TRANSACTION_CATEGORIES } from '../lib/constants';
 
 interface Transaction {
     id?: string;
@@ -18,15 +19,28 @@ interface TransactionTableProps {
 
 export default function TransactionTable({ transactions }: TransactionTableProps) {
     const [currentPage, setCurrentPage] = React.useState(1);
+    const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
     const itemsPerPage = 20;
+
+    // Filter transactions based on selected category
+    const filteredTransactions = useMemo(() => {
+        if (!transactions) return [];
+        if (selectedCategory === 'All') return transactions;
+        return transactions.filter(t => t.category === selectedCategory);
+    }, [transactions, selectedCategory]);
+
+    // Reset page when category changes
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedCategory]);
 
     if (!transactions || transactions.length === 0) {
         return <div className="text-center p-4 text-gray-500">No transactions to display.</div>;
     }
 
-    const totalPages = Math.ceil(transactions.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentTransactions = transactions.slice(startIndex, startIndex + itemsPerPage);
+    const currentTransactions = filteredTransactions.slice(startIndex, startIndex + itemsPerPage);
 
     const handlePrevious = () => {
         setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -38,6 +52,22 @@ export default function TransactionTable({ transactions }: TransactionTableProps
 
     return (
         <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold text-gray-900">Transactions</h2>
+                <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="block w-full max-w-xs p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                >
+                    <option value="All">All Categories</option>
+                    {TRANSACTION_CATEGORIES.map((category) => (
+                        <option key={category} value={category}>
+                            {category}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
             <div className="overflow-x-auto shadow-md sm:rounded-lg">
                 <table className="w-full text-sm text-left text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50">
@@ -50,33 +80,41 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                         </tr>
                     </thead>
                     <tbody>
-                        {currentTransactions.map((t, index) => (
-                            <tr key={t.id || index} className="bg-white border-b hover:bg-gray-50">
-                                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                    {new Date(t.date).toLocaleDateString()}
-                                </td>
-                                <td className="px-6 py-4">
-                                    {t.clean_name || t.narration || t.description || 'No description'}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                        {t.category || 'Uncategorized'}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${t.type === 'CREDIT'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
+                        {currentTransactions.length > 0 ? (
+                            currentTransactions.map((t, index) => (
+                                <tr key={t.id || index} className="bg-white border-b hover:bg-gray-50">
+                                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                        {new Date(t.date).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {t.clean_name || t.narration || t.description || 'No description'}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                            {t.category || 'Uncategorized'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${t.type === 'CREDIT'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
+                                            }`}>
+                                            {t.type}
+                                        </span>
+                                    </td>
+                                    <td className={`px-6 py-4 text-right font-semibold ${t.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
                                         }`}>
-                                        {t.type}
-                                    </span>
-                                </td>
-                                <td className={`px-6 py-4 text-right font-semibold ${t.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
-                                    }`}>
-                                    {t.type === 'DEBIT' ? '-' : '+'}{Math.abs(t.amount).toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                                        {t.type === 'DEBIT' ? '-' : '+'}{Math.abs(t.amount).toLocaleString('en-NG', { style: 'currency', currency: 'NGN' })}
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                    No transactions found for this category.
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -102,7 +140,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                     <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
                             <p className="text-sm text-gray-700">
-                                Showing <span className="font-medium">{startIndex + 1}</span> to <span className="font-medium">{Math.min(startIndex + itemsPerPage, transactions.length)}</span> of <span className="font-medium">{transactions.length}</span> results
+                                Showing <span className="font-medium">{startIndex + 1}</span> to <span className="font-medium">{Math.min(startIndex + itemsPerPage, filteredTransactions.length)}</span> of <span className="font-medium">{filteredTransactions.length}</span> results
                             </p>
                         </div>
                         <div>

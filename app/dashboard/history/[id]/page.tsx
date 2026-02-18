@@ -1,34 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getStatementDetails } from '@/app/actions/statement-actions';
+import { useQuery } from '@tanstack/react-query';
 import TransactionTable from '@/components/TransactionTable';
 import TransactionAnalysis from '@/components/TransactionAnalysis';
 
 export default function StatementDetailsPage() {
     const params = useParams();
     const router = useRouter();
-    const [statementData, setStatementData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (params.id) {
-            fetchDetails(params.id as string);
-        }
-    }, [params.id]);
-
-    const fetchDetails = async (id: string) => {
-        setLoading(true);
-        const result = await getStatementDetails(id);
-        if (result.error) {
-            setError(result.error);
-        } else {
-            setStatementData(result.data);
-        }
-        setLoading(false);
-    };
+    const { data: statementData, isLoading: loading, error } = useQuery({
+        queryKey: ['statement', params.id],
+        queryFn: async () => {
+            if (!params.id) throw new Error('No ID provided');
+            const result = await getStatementDetails(params.id as string);
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            return result.data;
+        },
+        enabled: !!params.id,
+    });
 
     if (loading) {
         return <div className="text-center py-12 text-gray-500">Loading statement details...</div>;
@@ -37,7 +30,7 @@ export default function StatementDetailsPage() {
     if (error) {
         return (
             <div className="text-center py-12 text-red-500">
-                <p>Error: {error}</p>
+                <p>Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
                 <button
                     onClick={() => router.push('/dashboard/history')}
                     className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"

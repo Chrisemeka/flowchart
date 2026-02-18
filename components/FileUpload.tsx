@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface FileUploadProps {
   onUploadSuccess: (data: any) => void;
@@ -8,28 +9,12 @@ interface FileUploadProps {
 
 export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { mutate: uploadFile, isPending: loading, error: uploadError } = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
 
-  // Handle file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setError(null);
-    }
-  };
-
-  // Handle the upload and parsing
-  const handleUpload = async () => {
-    if (!file) return;
-
-    setLoading(true);
-    setError(null);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
       const response = await fetch('/api/parse', {
         method: 'POST',
         body: formData,
@@ -40,13 +25,28 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to parse PDF');
       }
-
+      return data;
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ['statements'] });
       onUploadSuccess(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
+  });
+
+  const error = uploadError ? (uploadError as Error).message : null;
+
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+
+  // Handle the upload and parsing
+  const handleUpload = () => {
+    if (!file) return;
+    uploadFile(file);
   };
 
   return (

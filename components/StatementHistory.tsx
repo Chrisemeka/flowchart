@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { getUserStatements } from '@/app/actions/statement-actions';
+import { useQuery } from '@tanstack/react-query';
 
 interface Statement {
     id: string;
@@ -15,24 +15,16 @@ interface Statement {
 }
 
 export default function StatementHistory() {
-    const [statements, setStatements] = useState<Statement[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        fetchStatements();
-    }, []);
-
-    const fetchStatements = async () => {
-        setLoading(true);
-        const result = await getUserStatements();
-        if (result.error) {
-            setError(result.error);
-        } else {
-            setStatements(result.data || []);
+    const { data: statements = [], isLoading: loading, error, refetch } = useQuery<Statement[]>({
+        queryKey: ['statements'],
+        queryFn: async () => {
+            const result = await getUserStatements();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            return result.data || [];
         }
-        setLoading(false);
-    };
+    });
 
     if (loading) {
         return <div className="text-center py-8 text-gray-500">Loading history...</div>;
@@ -41,8 +33,8 @@ export default function StatementHistory() {
     if (error) {
         return (
             <div className="text-center py-8 text-red-500">
-                <p>Error: {error}</p>
-                <button onClick={fetchStatements} className="mt-2 text-blue-600 underline">Try Again</button>
+                <p>Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
+                <button onClick={() => refetch()} className="mt-2 text-blue-600 underline">Try Again</button>
             </div>
         );
     }

@@ -101,3 +101,77 @@ The system is not perfect yet, it is still in development and is subject to chan
 ## 📄 License
 
 Distributed under the MIT License.
+
+## 🔒 Privacy Policy for Flowchart
+
+**Effective Date:** February 19, 2026  
+**Last Updated:** February 19, 2026
+
+### TL;DR
+
+*   We process your bank statements to give you financial insights.
+*   We do not sell your data. Period.
+*   You can delete your data at any time.
+*   We use industry-standard encryption to keep your records safe.
+
+### 1. Information We Collect
+
+To provide the Flowchart service, we collect:
+
+*   **Financial Data:** Transaction history, balances, and descriptions from bank statements (PDF/CSV) you upload.
+*   **Account Information:** Name and email address if you create an account.
+*   **Metadata:** Technical data like IP address and device type to ensure app security.
+
+### 2. How We Use Your Data
+
+Your data is used strictly to:
+
+*   Categorize and aggregate your spending across multiple accounts.
+*   Generate automated financial "flows" and budget suggestions.
+*   Improve the app’s categorization algorithms.
+
+### 3. Data Storage & Security
+
+We implement "Bank Level" security measures:
+
+*   **Encryption:** All uploaded statements are encrypted using AES256 at rest and TLS during transit.
+*   **Data Minimization:** We only store what is necessary for the app to function.
+
+### 4. Third-party Sharing
+
+We do not sell, rent, or trade your personal financial data with third parties for marketing purposes. Data is only shared with essential service providers (e.g., secure cloud hosting) who are also bound by strict confidentiality.
+
+### 5. Your Rights
+
+Under the NDPR (and GDPR where applicable), you have the right to:
+
+*   Access the data we hold about you.
+*   Request the permanent deletion of all uploaded statements and your account.
+*   Withdraw consent for data processing at any time.
+
+## ⚖️ Terms and Conditions for Flowchart
+
+### 1. Acceptance of Terms
+
+By accessing or using Flowchart, you agree to be bound by these terms. If you do not agree, please do not upload your financial data.
+
+### 2. Not Financial Advice
+
+**IMPORTANT:** Flowchart is a tool for personal information and organization only. We are not a bank, a licensed financial advisor, or a wealth manager. Any insights provided are suggestions based on your data and should not be taken as professional financial or investment advice.
+
+### 3. User Responsibilities
+
+*   **Authorization:** You represent that you have the legal right to upload and process the bank statements you provide.
+*   **Security:** You are responsible for maintaining the confidentiality of your Flowchart login credentials.
+
+### 4. Accuracy of Information
+
+Flowchart relies on the data you provide. We are not responsible for inaccuracies in your financial overview caused by incomplete, modified, or corrupted bank statements.
+
+### 5. Limitation of Liability
+
+To the maximum extent permitted by law, Flowchart and its developers shall not be liable for any financial losses, damages, or data breaches resulting from unauthorized access to your device or thirdparty service failures.
+
+### 6. Termination
+
+We reserve the right to suspend or terminate your access to the service if we detect fraudulent activity or a violation of these terms.

@@ -8,11 +8,57 @@ interface FileUploadProps {
   onUploadSuccess: (data: any) => void;
 }
 
+import Link from 'next/link';
+import { getUserTermsStatus, acceptTermsAndPrivacy } from '@/app/actions/user';
+import { useEffect } from 'react';
+
+interface FileUploadProps {
+  onUploadSuccess: (data: any) => void;
+}
+
 export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [needsAcceptance, setNeedsAcceptance] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+
   const queryClient = useQueryClient();
+
+  // Check user status on mount
+  useEffect(() => {
+    async function checkStatus() {
+      const status = await getUserTermsStatus();
+      if (status.error) {
+        // Handle error or assume accepted to not block? Or block?
+        // For now, if we can't verify, we might want to be safe or just let it pass if it's an auth issue (which middleware handles)
+      } else {
+        if (!status.termsAcceptedAt || !status.privacyAcceptedAt) {
+          setNeedsAcceptance(true);
+        }
+      }
+    }
+    checkStatus();
+  }, []);
+
   const { mutate: uploadFile, isPending: loading, error: uploadError } = useMutation({
     mutationFn: async (file: File) => {
+      // If acceptance is needed, we must ensure it's recorded before uploading
+      if (needsAcceptance) {
+        if (!termsAccepted || !privacyAccepted) {
+          throw new Error("You must accept the Terms and Privacy Policy.");
+        }
+
+        setIsAccepting(true);
+        const result = await acceptTermsAndPrivacy();
+        setIsAccepting(false);
+
+        if (result.error) {
+          throw new Error("Failed to record acceptance. Please try again.");
+        }
+        setNeedsAcceptance(false); // No longer needs acceptance
+      }
+
       const formData = new FormData();
       formData.append('file', file);
 
@@ -49,6 +95,8 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
     if (!file) return;
     uploadFile(file);
   };
+
+  const isUploadDisabled = !file || loading || (needsAcceptance && (!termsAccepted || !privacyAccepted)) || isAccepting;
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl border border-border shadow-sm mb-12">
@@ -90,21 +138,50 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
 
         <button
           onClick={handleUpload}
-          disabled={!file || loading}
+          disabled={isUploadDisabled}
           className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2
-            ${!file || loading
+            ${isUploadDisabled
               ? 'bg-muted text-muted-foreground cursor-not-allowed'
               : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md'}`}
         >
-          {loading ? (
+          {loading || isAccepting ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
-              Processing...
+              {isAccepting ? 'Accepting Terms...' : 'Processing...'}
             </>
           ) : (
             'Upload & Analyze'
           )}
         </button>
+
+        {needsAcceptance && (
+          <div className="space-y-3 pt-2 text-sm text-muted-foreground">
+            <div className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="terms" className="leading-tight">
+                I agree to the <Link href="/terms" target="_blank" className="text-primary hover:underline">Terms and Conditions</Link>
+              </label>
+            </div>
+            <div className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                id="privacy"
+                checked={privacyAccepted}
+                onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="privacy" className="leading-tight">
+                I agree to the <Link href="/privacy" target="_blank" className="text-primary hover:underline">Privacy Policy</Link>
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Error Message */}

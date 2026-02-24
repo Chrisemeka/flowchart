@@ -1,9 +1,30 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { processBankStatement } from '@/lib/services/bank-statement';
+
+// ❌ DO NOT statically import the service here!
+// import { processBankStatement } from '@/lib/services/bank-statement'; 
 
 export async function POST(request: Request) {
   try {
+    // --- 1. THE VERCEL POLYFILL BUNKER ---
+    // These MUST run before the PDF library is loaded into memory
+    if (typeof global.DOMMatrix === 'undefined') {
+      (global as any).DOMMatrix = class DOMMatrix {};
+    }
+    if (typeof global.Path2D === 'undefined') {
+      (global as any).Path2D = class Path2D {};
+    }
+    if (typeof global.ImageData === 'undefined') {
+      (global as any).ImageData = class ImageData {
+        constructor() {}
+      };
+    }
+    // -------------------------------------
+
+    // --- 2. DYNAMIC IMPORT ---
+    // Safely load your service now that the polyfills are active
+    const { processBankStatement } = await import('@/lib/services/bank-statement');
+
     // 1. Authenticate the User
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();

@@ -56,5 +56,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Redirect authenticated users away from auth pages to the dashboard
+  if (
+    user &&
+    (request.nextUrl.pathname === '/' ||
+      request.nextUrl.pathname.startsWith('/login') ||
+      request.nextUrl.pathname.startsWith('/auth/signup') ||
+      request.nextUrl.pathname.startsWith('/auth/forgot-password') ||
+      request.nextUrl.pathname.startsWith('/auth/reset-password'))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
+  }
+
   return response;
 }

@@ -1,13 +1,14 @@
-import type { NextConfig } from 'next';
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // 1. Tell Next.js not to bundle pdf-parse OR its underlying pdfjs-dist engine
+  serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
 
-const nextConfig: NextConfig = {
-  // Fix 1: Moved from 'experimental' to root level in Next.js 16
-  serverExternalPackages: ['pdfjs-dist', 'pdf-parse'],
-
-  // Fix 2: Keep the Webpack config for the build process (and for dev if we force it)
-  webpack: (config) => {
-    config.resolve.alias.canvas = false;
-    return config;
+  experimental: {
+    // 2. Force Vercel to physically copy all pdfjs-dist files (including the missing worker) 
+    // into the serverless function for your API routes.
+    outputFileTracingIncludes: {
+      '/api/**/*': ['./node_modules/pdfjs-dist/**/*'],
+    },
   },
 };
 

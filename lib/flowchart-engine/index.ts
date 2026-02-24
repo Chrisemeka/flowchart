@@ -1,5 +1,11 @@
 
-// 1. USE THE LEGACY BUILD (Critical for Node.js)
+if (typeof global.DOMMatrix === 'undefined') {
+  (global as any).DOMMatrix = class DOMMatrix {};
+}
+if (typeof global.Path2D === 'undefined') {
+  (global as any).Path2D = class Path2D {};
+}
+
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 import { detectSource } from './utils';

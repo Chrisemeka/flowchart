@@ -1,19 +1,44 @@
 export function detectSource(filename = '', content = ''): string {
   const lowerFilename = (filename || '').toLowerCase();
   
-  // 1. OPay Detection (Bulletproof Table Headers & OCR Typo Fix)
-  // Checks for exact table columns from the PDF or the "DPAY" OCR glitch
+  // 1. Kuda Bank (Check this first to avoid OPay false positives)
+  if (
+    lowerFilename.includes('kuda') || 
+    /Kuda\s+Microfinance/i.test(content) || 
+    /Kuda\s+Technologies/i.test(content) ||
+    /Kuda\s+MF\s+Bank/i.test(content)
+  ) {
+    return 'Kuda Bank';
+  }
+
+  // 2. Zenith Bank
+  if (
+    lowerFilename.includes('zenith') || 
+    /ZENITH\s+BANK\s+PLC/i.test(content) || 
+    /www\.zenithbank\.com/i.test(content)
+  ) {
+    return 'Zenith Bank';
+  }
+
+  // 3. Union Bank
+  if (
+    lowerFilename.includes('union') || 
+    /Union\s+Bank\s+of\s+Nigeria/i.test(content) || 
+    /UNION\s+BANK/i.test(content)
+  ) {
+    return 'Union Bank';
+  }
+
+  // 4. OPay Detection
   if (
     lowerFilename.includes('opay') || 
     (content.includes('Wallet Account') && content.includes('Trans. Time') && content.includes('Balance After')) ||
-    /opayweb\.com/i.test(content) ||
-    /OPAY\s+DIGITAL/i.test(content) ||
-    /DPAY\s+DIGITAL/i.test(content) 
+    /opayweb\.com/i.test(content)
   ) {
     return 'OPay';
   }
 
-  // 2. PalmPay Detection
+  // 5. PalmPay Detection
   if (
     lowerFilename.includes('palmpay') || 
     /PalmPay/i.test(content) || 
@@ -23,7 +48,7 @@ export function detectSource(filename = '', content = ''): string {
     return 'PalmPay';
   }
 
-  // 3. Access Bank Detection
+  // 6. Access Bank Detection
   if (
     lowerFilename.includes('access') || 
     /Access\s+Bank/i.test(content) || 

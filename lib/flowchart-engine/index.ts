@@ -7,6 +7,9 @@ import { detectSource } from './utils';
 import { parseAccessBankPDF } from './parsers/access';
 import { parsePalmPayPDF } from './parsers/palmpay';
 import { parseOPayPDF } from './parsers/opay';
+import { parseZenithBankPDF } from './parsers/zenith';
+import { parseKudaBankPDF } from './parsers/kuda';
+import { parseUnionBankPDF } from './parsers/union';
 
 export async function parseBankStatement(fileBuffer: ArrayBuffer) {
   try {
@@ -81,12 +84,29 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
           bank: bankName,
           transactions: parseOPayPDF(pageTexts)
         };
+      case 'Zenith Bank':
+        return {
+          status: 'success',
+          bank: bankName,
+          transactions: parseZenithBankPDF(pageTexts)
+        };
+      case 'Kuda Bank':
+        return {
+          status: 'success',
+          bank: bankName,
+          transactions: parseKudaBankPDF(pageTexts)
+        };
+     case 'Union Bank':
+        return {
+          status: 'success',
+          bank: bankName,
+          transactions: parseUnionBankPDF(pageTexts)
+        };
       default:
         return {
           status: 'error',
           message: 'Bank not recognized in text.',
-          detected: 'Unknown',
-          debugSnippet: fullText.substring(0, 100)
+          detected: bankName
         };
     }
 

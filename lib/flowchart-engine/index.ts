@@ -1,4 +1,3 @@
-// src/lib/flowchart-engine/index.ts
 
 // 1. USE THE LEGACY BUILD (Critical for Node.js)
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';

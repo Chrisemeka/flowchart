@@ -1,5 +1,5 @@
 import React, { useMemo, useTransition } from 'react';
-import { ChevronRight, ChevronLeft, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { ChevronRight, ChevronLeft, ArrowUp, ArrowDown } from 'lucide-react'
 import { TRANSACTION_CATEGORIES } from '../lib/constants';
 import { updateTransactionCategory } from '@/app/actions/transaction-actions';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,7 +22,7 @@ interface TransactionTableProps {
 
 type SortDirection = 'asc' | 'desc';
 
-export default function TransactionTable({ transactions, statementId }: TransactionTableProps) {
+export default function TransactionTable({ transactions }: TransactionTableProps) {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
     const [sortDirection, setSortDirection] = React.useState<SortDirection>('desc');

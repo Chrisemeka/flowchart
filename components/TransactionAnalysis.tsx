@@ -43,7 +43,6 @@ export default function TransactionAnalysis({ transactions }: TransactionAnalysi
                 expense += amount;
 
                 // For line chart - aggregate daily expenses
-                const dateKey = new Date(t.date).toLocaleDateString();
                 const isoDate = new Date(t.date).toISOString().split('T')[0];
                 dailyExpenses[isoDate] = (dailyExpenses[isoDate] || 0) + amount;
             }

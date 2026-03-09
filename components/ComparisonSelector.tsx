@@ -25,7 +25,7 @@ export default function ComparisonSelector({
     label,
     excludeId
 }: ComparisonSelectorProps) {
-    const availableStatements = statements.filter(s => s.id !== excludeId);
+
 
     // If the currently selected ID is now excluded (e.g. selected in the other dropdown),
     // we should ideally handle that, but for now the parent can handle the reset or we just let it be.

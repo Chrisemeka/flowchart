@@ -12,8 +12,8 @@ const OPAY_PATTERN = /(\d{1,2}\s+[A-Za-z]{3}\s+\d{4}\s+\d{1,2}:\d{2}:\d{2})\s+\d
 
 export function parseOPayPDF(pages: string[]) {
   const fullText = pages.join('  ');
-  const transactions: any[] = [];
-  
+  const transactions: Record<string, unknown>[] = [];
+
   let match;
 
   while ((match = OPAY_PATTERN.exec(fullText)) !== null) {

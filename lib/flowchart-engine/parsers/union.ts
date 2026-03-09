@@ -6,8 +6,8 @@ const UNION_PATTERN = /(\d{2}-[A-Za-z]{3}-\d{4})\s+([\s\S]+?)\s+([\d,]+\.\d{2})/
 
 export function parseUnionBankPDF(pages: string[]) {
   const fullText = pages.join('  ');
-  const transactions: any[] = [];
-  
+  const transactions: Record<string, unknown>[] = [];
+
   // Try to find the Opening Balance to anchor our math
   // Union Bank usually says "Opening Balance" followed by the amount
   const openingBalMatch = fullText.match(/Opening\s+Balance[^\d]*([\d,]+\.\d{2})/i);
@@ -36,17 +36,17 @@ export function parseUnionBankPDF(pages: string[]) {
     const description = cleanMerchantName(cleanDesc);
 
     transactions.push({
-      date, 
-      description, 
-      amount, 
-      type, 
-      balance: currentBalance, 
+      date,
+      description,
+      amount,
+      type,
+      balance: currentBalance,
       originalText: fullMatch.trim()
     });
 
     previousBalance = currentBalance;
   }
-  
+
   // Debugging fallback just like OPay
   if (transactions.length === 0) {
     console.log("--- UNION PARSER FAILED: RAW TEXT PREVIEW ---");

@@ -13,18 +13,18 @@ export function parseAccessBankPDF(pages: string[]) {
   // Join all pages into one giant text blob
   // We double-space join to ensure separation between end of one page and start of next
   const fullText = pages.join('  ');
-  
-  const transactions: any[] = [];
+
+  const transactions: Record<string, unknown>[] = [];
   let match;
 
   // Global Regex Loop: Finds EVERY match in the text blob
   while ((match = TRANSACTION_PATTERN.exec(fullText)) !== null) {
     const [
-      fullMatch, 
-      dateStr, 
-      rawDescription, 
-      debitStr, 
-      creditStr, 
+      fullMatch,
+      dateStr,
+      rawDescription,
+      debitStr,
+      creditStr,
       balanceStr
     ] = match;
 

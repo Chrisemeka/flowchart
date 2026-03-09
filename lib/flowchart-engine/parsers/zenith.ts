@@ -6,8 +6,8 @@ const ZENITH_PATTERN = /(\d{2}\/\d{2}\/\d{4})\s+([\s\S]{1,800}?)\s+(\d{2}\/\d{2}
 
 export function parseZenithBankPDF(pages: string[]) {
   const fullText = pages.join('  ');
-  const transactions: any[] = [];
-  
+  const transactions: Record<string, unknown>[] = [];
+
   const openingBalMatch = fullText.match(/OPENING BALANCE:\s*[A-Z]{3}\s*([\d,]+\.\d{2})/i);
   let previousBalance = openingBalMatch ? parseAmount(openingBalMatch[1]) : 0;
 
@@ -16,8 +16,8 @@ export function parseZenithBankPDF(pages: string[]) {
 
   while ((match = ZENITH_PATTERN.exec(fullText)) !== null) {
     matchCount++;
-    const [fullMatch, dateStr, rawMiddleText, valueDate, balanceStr] = match;
-    
+    const [fullMatch, dateStr, rawMiddleText, , balanceStr] = match;
+
     // Self-healing for OCR replacing decimals with colons or commas
     const cleanBal = balanceStr.replace(/[,:](\d{2})$/, '.$1');
     const currentBalance = parseAmount(cleanBal);
@@ -34,11 +34,11 @@ export function parseZenithBankPDF(pages: string[]) {
     const description = cleanMerchantName(rawMiddleText.replace(/[\d,]+[.:]\d{2}/g, '').trim());
 
     transactions.push({
-      date, 
-      description, 
-      amount, 
-      type, 
-      balance: currentBalance, 
+      date,
+      description,
+      amount,
+      type,
+      balance: currentBalance,
       originalText: fullMatch.trim()
     });
 

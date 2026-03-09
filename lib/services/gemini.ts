@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import { TRANSACTION_CATEGORIES } from '../constants';
 
-export async function categorizeTransactions(transactions: any[]) {
+export async function categorizeTransactions(transactions: Record<string, unknown>[]) {
     if (!process.env.GEMINI_API_KEY) {
         console.error('GEMINI_API_KEY is not set');
         return {};

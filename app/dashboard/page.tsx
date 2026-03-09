@@ -5,15 +5,33 @@ import FileUpload from '@/components/FileUpload';
 import TransactionTable from '@/components/TransactionTable';
 import TransactionAnalysis from '@/components/TransactionAnalysis';
 import Image from 'next/image';
+interface Transaction {
+  id?: string;
+  date: string;
+  amount: number;
+  type: 'DEBIT' | 'CREDIT';
+  category?: string;
+  clean_name?: string;
+  narration?: string;
+  description?: string;
+}
 
+interface StatementData {
+  statementId: string;
+  transactionCount?: number;
+  transactions?: Transaction[];
+  bank?: string;
+  month?: number;
+  year?: number;
+}
 
 export default function Home() {
-  const [statementData, setStatementData] = useState<any>(null);
+  const [statementData, setStatementData] = useState<StatementData | null>(null);
 
-  const handleUploadSuccess = (data: any) => {
+  const handleUploadSuccess = (data: Record<string, unknown>) => {
     // The data structure returned is { status, message, data: { ... } }
     // We want the inner data object which contains transactions
-    setStatementData(data.data);
+    setStatementData(data.data as StatementData);
   };
 
   return (
@@ -21,11 +39,11 @@ export default function Home() {
       <div className="max-w-4xl mx-auto text-center mb-10">
         <div className="flex justify-center mb-6">
           <Image
-              src="/undraw_add-files_s0fz.svg"
-              alt="No File Added"
-              width={200}
-              height={200}
-              className="w-48 h-auto mb-4 opacity-80"
+            src="/undraw_add-files_s0fz.svg"
+            alt="No File Added"
+            width={200}
+            height={200}
+            className="w-48 h-auto mb-4 opacity-80"
           />
         </div>
         <h2 className="text-2xl font-light text-foreground">Analyze Your Statements</h2>

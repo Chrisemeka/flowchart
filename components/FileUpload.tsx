@@ -4,16 +4,12 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Upload, FileText, AlertCircle } from 'lucide-react';
 
-interface FileUploadProps {
-  onUploadSuccess: (data: any) => void;
-}
-
 import Link from 'next/link';
 import { getUserTermsStatus, acceptTermsAndPrivacy } from '@/app/actions/user';
 import { useEffect } from 'react';
 
 interface FileUploadProps {
-  onUploadSuccess: (data: any) => void;
+  onUploadSuccess: (data: Record<string, unknown>) => void;
 }
 
 export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
@@ -74,7 +70,7 @@ export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
       }
       return data;
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: Record<string, unknown>) => {
       queryClient.invalidateQueries({ queryKey: ['statements'] });
       onUploadSuccess(data);
     }

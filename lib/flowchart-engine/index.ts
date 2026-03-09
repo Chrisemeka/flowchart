@@ -1,9 +1,9 @@
 
 if (typeof global.DOMMatrix === 'undefined') {
-  (global as any).DOMMatrix = class DOMMatrix {};
+  Object.assign(global, { DOMMatrix: class DOMMatrix { } });
 }
 if (typeof global.Path2D === 'undefined') {
-  (global as any).Path2D = class Path2D {};
+  Object.assign(global, { Path2D: class Path2D { } });
 }
 
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
@@ -28,11 +28,11 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
       data,
       disableFontFace: true,
       useSystemFonts: true,
-      standardFontDataUrl: `node_modules/pdfjs-dist/standard_fonts/`, 
+      standardFontDataUrl: `node_modules/pdfjs-dist/standard_fonts/`,
     });
 
     const pdf = await loadingTask.promise;
-    
+
     // 4. Extract Text Page by Page
     const maxPages = 10;
     const pageTexts: string[] = [];
@@ -40,13 +40,13 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
     for (let i = 1; i <= Math.min(pdf.numPages, maxPages); i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      
+
       // JOIN STRATEGY:
       // Use '  ' (double space) to safely separate columns visually
       const text = textContent.items
-        .map((item: any) => item.str)
-        .join('  '); 
-        
+        .map((item) => ('str' in item && typeof item.str === 'string' ? item.str : ''))
+        .join('  ');
+
       pageTexts.push(text);
     }
 
@@ -54,7 +54,7 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
 
     // --- DEBUG LOGS (Keep these until it works) ---
     console.log('--- RAW PDF TEXT START ---');
-    console.log(fullText.substring(0, 500)); 
+    console.log(fullText.substring(0, 500));
     console.log('--- RAW PDF TEXT END ---');
     // ---------------------------------------------
 
@@ -67,7 +67,7 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
     }
 
     // 5. Detect and Parse
-    const bankName = detectSource('upload.pdf', fullText); 
+    const bankName = detectSource('upload.pdf', fullText);
     console.log(`Detected Bank: ${bankName}`);
 
     switch (bankName) {
@@ -101,7 +101,7 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
           bank: bankName,
           transactions: parseKudaBankPDF(pageTexts)
         };
-     case 'Union Bank':
+      case 'Union Bank':
         return {
           status: 'success',
           bank: bankName,
@@ -115,12 +115,12 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
         };
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('PDF Parsing Crash:', error);
     return {
       status: 'error',
       message: 'Server failed to process PDF',
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }

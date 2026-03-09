@@ -6,24 +6,48 @@ import ComparisonSelector from '@/components/ComparisonSelector';
 import ComparisonView from '@/components/ComparisonView';
 import Image from 'next/image';
 
+interface Statement {
+    id: string;
+    bank_name: string;
+    month: number;
+    year: number;
+    file_name: string;
+}
+
+interface Transaction {
+    id?: string;
+    date: string;
+    amount: number;
+    type: 'DEBIT' | 'CREDIT';
+    category?: string;
+    clean_name?: string;
+    narration?: string;
+    description?: string;
+}
+
+interface StatementData {
+    statementId: string;
+    transactionCount: number;
+    transactions: Transaction[];
+    bank: string;
+    month: number;
+    year: number;
+}
 
 export default function ComparePage() {
-    const [statements, setStatements] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [statements, setStatements] = useState<Statement[]>([]);
     const [selectedIdA, setSelectedIdA] = useState<string | null>(null);
     const [selectedIdB, setSelectedIdB] = useState<string | null>(null);
-    const [dataA, setDataA] = useState<any>(null);
-    const [dataB, setDataB] = useState<any>(null);
+    const [dataA, setDataA] = useState<StatementData | null>(null);
+    const [dataB, setDataB] = useState<StatementData | null>(null);
     const [loadingData, setLoadingData] = useState(false);
 
     useEffect(() => {
         async function fetchStatements() {
-            setLoading(true);
             const response = await getUserStatements();
             if (response.data) {
-                setStatements(response.data);
+                setStatements(response.data as Statement[]);
             }
-            setLoading(false);
         }
         fetchStatements();
     }, []);
@@ -36,12 +60,12 @@ export default function ComparePage() {
 
             if (selectedIdA && (!dataA || dataA.statementId !== selectedIdA)) {
                 const res = await getStatementDetails(selectedIdA);
-                if (res.data) setDataA(res.data);
+                if (res.data) setDataA(res.data as StatementData);
             }
 
             if (selectedIdB && (!dataB || dataB.statementId !== selectedIdB)) {
                 const res = await getStatementDetails(selectedIdB);
-                if (res.data) setDataB(res.data);
+                if (res.data) setDataB(res.data as StatementData);
             }
 
             setLoadingData(false);

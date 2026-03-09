@@ -9,15 +9,17 @@ export async function POST(request: Request) {
     // --- 1. THE VERCEL POLYFILL BUNKER ---
     // These MUST run before the PDF library is loaded into memory
     if (typeof global.DOMMatrix === 'undefined') {
-      (global as any).DOMMatrix = class DOMMatrix {};
+      Object.assign(global, { DOMMatrix: class DOMMatrix { } });
     }
     if (typeof global.Path2D === 'undefined') {
-      (global as any).Path2D = class Path2D {};
+      Object.assign(global, { Path2D: class Path2D { } });
     }
     if (typeof global.ImageData === 'undefined') {
-      (global as any).ImageData = class ImageData {
-        constructor() {}
-      };
+      Object.assign(global, {
+        ImageData: class ImageData {
+          constructor() { }
+        }
+      });
     }
     // -------------------------------------
 
@@ -56,12 +58,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API Route Error:', error);
     return NextResponse.json({
       status: 'error',
       message: 'Server error',
-      details: error.message
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

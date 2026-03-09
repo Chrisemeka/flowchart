@@ -10,7 +10,7 @@ export interface ProcessedStatementResult {
     data?: {
         statementId: string;
         transactionCount: number;
-        transactions?: any[];
+        transactions?: Record<string, unknown>[];
         bank?: string;
     };
     details?: string;
@@ -95,18 +95,18 @@ export async function processBankStatement(
             }
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Service Error:', error);
         return {
             status: 'error',
             message: 'Server error while processing document',
-            details: error.message
+            details: error instanceof Error ? error.message : 'Unknown error'
         };
     }
 }
 
-function calculateStatementMetadata(transactions: any[]) {
-    const dates = transactions.map((t: any) => new Date(t.date).getTime());
+function calculateStatementMetadata(transactions: Record<string, unknown>[]) {
+    const dates = transactions.map((t) => new Date(t.date as string).getTime());
     const startDate = new Date(Math.min(...dates));
     const endDate = new Date(Math.max(...dates));
 
@@ -119,7 +119,7 @@ function calculateStatementMetadata(transactions: any[]) {
 async function saveStatementToDb(
     supabase: SupabaseClient,
     user: User,
-    parsedData: any,
+    parsedData: { bank?: string },
     startDate: Date,
     endDate: Date,
     statementMonth: number,
@@ -142,25 +142,25 @@ async function saveStatementToDb(
         .single();
 }
 
-function prepareTransactions(transactions: any[], statementId: string, categories: Record<string, string> = {}) {
-    return transactions.map((t: any, index: number) => ({
+function prepareTransactions(transactions: Record<string, unknown>[], statementId: string, categories: Record<string, string> = {}) {
+    return transactions.map((t, index: number) => ({
         statement_id: statementId,
-        amount: t.amount,
-        type: t.type,
-        date: new Date(t.date).toISOString(),
-        narration: t.originalText || t.description,
-        clean_name: t.description,
+        amount: t.amount as number,
+        type: t.type as string,
+        date: new Date(t.date as string).toISOString(),
+        narration: (t.originalText as string) || (t.description as string),
+        clean_name: t.description as string,
         category: categories[index] || 'Uncategorized', // Use Gemini category or default
         hash: generateTransactionHash({
-            date: t.date,
-            amount: t.amount,
-            type: t.type,
-            description: t.originalText || t.description
+            date: t.date as string,
+            amount: t.amount as number,
+            type: t.type as string,
+            description: (t.originalText as string) || (t.description as string)
         })
     }));
 }
 
-async function saveTransactionsToDb(supabase: SupabaseClient, transactions: any[]) {
+async function saveTransactionsToDb(supabase: SupabaseClient, transactions: Record<string, unknown>[]) {
     const { error } = await supabase
         .from('transactions')
         .insert(transactions);

@@ -78,7 +78,7 @@ export default function PrivacyPage() {
                             <p className="mb-4">Your data is used strictly to:</p>
                             <ul className="list-disc pl-5 space-y-2 marker:text-primary/50">
                                 <li>Categorize and aggregate your spending across multiple accounts.</li>
-                                <li>Generate automated financial "flows" and budget suggestions.</li>
+                                <li>Generate automated financial &quot;flows&quot; and budget suggestions.</li>
                                 <li>Improve the app’s categorization algorithms.</li>
                             </ul>
                         </section>
@@ -88,7 +88,7 @@ export default function PrivacyPage() {
                                 <Lock className="w-5 h-5 mr-2 text-muted-foreground" />
                                 3. Data Storage & Security
                             </h2>
-                            <p className="mb-4">We implement "Bank Level" security measures:</p>
+                            <p className="mb-4">We implement &quot;Bank Level&quot; security measures:</p>
                             <ul className="list-disc pl-5 space-y-2 marker:text-primary/50">
                                 <li>
                                     <strong>Encryption:</strong> All uploaded statements are encrypted using AES256 at rest and TLS during transit.

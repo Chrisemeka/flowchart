@@ -14,6 +14,17 @@ jobs:
       - name: Checkout Repository 
         uses: actions/checkout@v4
       
+      - name: Run Trivy Vulnarability Scanner
+        uses: aquasecurity/trivy-action@0.34.2
+        with:
+          trivy-version: 'v0.69.3'
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
       - name: Setup Node.js 
         uses: actions/setup-node@v4
         with: 

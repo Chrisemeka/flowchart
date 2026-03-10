@@ -15,6 +15,7 @@ import { parseOPayPDF } from './parsers/opay';
 import { parseZenithBankPDF } from './parsers/zenith';
 import { parseKudaBankPDF } from './parsers/kuda';
 import { parseUnionBankPDF } from './parsers/union';
+import { parseFirstBankPDF } from './parsers/firstbank';
 
 export async function parseBankStatement(fileBuffer: ArrayBuffer) {
   try {
@@ -76,6 +77,12 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
           status: 'success',
           bank: bankName,
           transactions: parseAccessBankPDF(pageTexts)
+        };
+      case 'First Bank':
+        return {
+          status: 'success',
+          bank: bankName,
+          transactions: parseFirstBankPDF(pageTexts)
         };
       case 'PalmPay':  // <--- ADD THIS BLOCK
         return {

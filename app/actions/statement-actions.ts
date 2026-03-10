@@ -67,3 +67,37 @@ export async function getStatementDetails(statementId: string) {
         }
     };
 }
+
+export async function deleteStatement(statementId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { error: 'Unauthorized' };
+    }
+
+    // 1. Delete transactions associated with the statement
+    const { error: txError } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('statement_id', statementId);
+
+    if (txError) {
+        console.error('Error deleting transactions:', txError);
+        return { error: 'Failed to delete transactions' };
+    }
+
+    // 2. Delete the statement itself
+    const { error: statementError } = await supabase
+        .from('statements')
+        .delete()
+        .eq('id', statementId)
+        .eq('user_id', user.id);
+
+    if (statementError) {
+        console.error('Error deleting statement:', statementError);
+        return { error: 'Failed to delete statement' };
+    }
+
+    return { success: true };
+}

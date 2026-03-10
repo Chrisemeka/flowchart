@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { getUserStatements } from '@/app/actions/statement-actions';
-import { useQuery } from '@tanstack/react-query';
-import { FileText, Calendar, CreditCard } from 'lucide-react';
+import { getUserStatements, deleteStatement } from '@/app/actions/statement-actions';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { FileText, Calendar, CreditCard, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 
 interface Statement {
@@ -17,6 +17,8 @@ interface Statement {
 }
 
 export default function StatementHistory() {
+    const queryClient = useQueryClient();
+
     const { data: statements = [], isLoading: loading, error, refetch } = useQuery<Statement[]>({
         queryKey: ['statements'],
         queryFn: async () => {
@@ -27,6 +29,25 @@ export default function StatementHistory() {
             return result.data || [];
         }
     });
+
+    const deleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const result = await deleteStatement(id);
+            if (result.error) throw new Error(result.error);
+            return result;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['statements'] });
+        }
+    });
+
+    const handleDelete = (e: React.MouseEvent, id: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (window.confirm("Are you sure you want to delete this statement? This action cannot be undone.")) {
+            deleteMutation.mutate(id);
+        }
+    };
 
     if (loading) {
         return (
@@ -44,10 +65,6 @@ export default function StatementHistory() {
             </div>
         );
     }
-
-    // ... (imports)
-
-    // ... (component start)
 
     if (statements.length === 0) {
         return (
@@ -104,9 +121,17 @@ export default function StatementHistory() {
                                 </div>
                                 <div className="flex items-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                                     <span className="text-sm font-medium mr-2">View Breakdown</span>
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
+                                    <button
+                                        onClick={(e) => handleDelete(e, statement.id)}
+                                        disabled={deleteMutation.isPending}
+                                        className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors z-10"
+                                        title="Delete Statement"
+                                    >
+                                        <Trash2 size={20} />
+                                    </button>
                                 </div>
                             </div>
                         </Link>

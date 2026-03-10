@@ -4,10 +4,13 @@ import { parseDate, parseAmount, cleanMerchantName } from '../utils';
 // Table structure: Date(DD-MMM-YYYY) Ref(Alphanumeric) Details(String) ValueDate(DD-MMM-YYYY) Withdrawal Amount Deposit Amount Balance
 // E.g., 04-Feb-2026 S76182236 REM:R-1426464991... 04-Feb-2026 0.00 77,000.00 77,000.00 S76182236
 const DATE_PATTERN = `\\d{2}-[A-Za-z]{3}-\\d{4}`;
-const AMOUNT_PATTERN = `[\\d,]+[.:]\\d{2}`;
+const AMOUNT_PATTERN = `(?:[\\d,]*)[.:]\\d{2}`;
+
+// Ban the table headers so it doesn't span across them
+const DESC_PATTERN = `(?:(?!Withdrawal\\(DR\\)|Opening\\s+Balance)[\\s\\S]){1,800}?`;
 
 const FIRSTBANK_PATTERN = new RegExp(
-    `(${DATE_PATTERN})\\s+(\\S+)\\s+([\\s\\S]{1,800}?)\\s+(${DATE_PATTERN})\\s+(${AMOUNT_PATTERN})\\s+(${AMOUNT_PATTERN})\\s+(${AMOUNT_PATTERN})(?:\\s+\\S+)?`,
+    `(${DATE_PATTERN})\\s+(\\S+)\\s+(${DESC_PATTERN})\\s+(${DATE_PATTERN})\\s+(${AMOUNT_PATTERN})\\s+(${AMOUNT_PATTERN})\\s+(${AMOUNT_PATTERN})(?:\\s+(?!${DATE_PATTERN})\\S+)?`,
     'g'
 );
 

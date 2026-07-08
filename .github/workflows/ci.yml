@@ -1,20 +1,20 @@
-name: Next.js CI pipline 
+name: Next.js CI/CD Pipeline
 
-on: 
-  push: 
+on:
+  push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
 
-jobs: 
-  build-and-test: 
-    runs-on: ubuntu-latest 
-
-    steps: 
-      - name: Checkout Repository 
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
         uses: actions/checkout@v4
-      
-      - name: Run Trivy Vulnarability Scanner
+
+      - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@0.34.2
         with:
           trivy-version: 'v0.69.3'
@@ -25,21 +25,36 @@ jobs:
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
 
-      - name: Setup Node.js 
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: security-scan   # only runs if security scan passes
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: "24.12.0"
           cache: "npm"
-      
-      - name: Install Dependencies 
-        run: npm ci
-      
-      - name: Run Linter
-        run: npm run lint 
 
-      - name: Build Next.js App 
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm run test:run
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Build Next.js App
         run: npm run build
-        env: 
+        env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

@@ -47,7 +47,7 @@ describe('StatementHistory', () => {
   });
 
   it('renders the empty state when there are no statements', async () => {
-    mockedGet.mockResolvedValue({ data: [], error: null });
+    mockedGet.mockResolvedValue({ data: [], error: undefined });
     renderWithProviders(<StatementHistory />);
 
     expect(await screen.findByText(/no statements uploaded yet/i)).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('StatementHistory', () => {
   });
 
   it('renders an error state with a retry button when the query fails', async () => {
-    mockedGet.mockResolvedValue({ data: null, error: 'Server exploded' });
+    mockedGet.mockResolvedValue({ data: undefined, error: 'Server exploded' });
     renderWithProviders(<StatementHistory />);
 
     expect(await screen.findByText(/server exploded/i)).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('StatementHistory', () => {
           start_date: '2025-04-01T00:00:00Z',
         },
       ],
-      error: null,
+      error: undefined,
     });
     renderWithProviders(<StatementHistory />);
 
@@ -109,7 +109,7 @@ describe('StatementHistory', () => {
           start_date: '2025-03-01T00:00:00Z',
         },
       ],
-      error: null,
+      error: undefined,
     });
     mockedDelete.mockResolvedValue({ success: true });
 
@@ -135,7 +135,7 @@ describe('StatementHistory', () => {
           start_date: '2025-03-01T00:00:00Z',
         },
       ],
-      error: null,
+      error: undefined,
     });
 
     renderWithProviders(<StatementHistory />);

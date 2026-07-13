@@ -377,7 +377,7 @@ If the user has zero statements uploaded, don't show the chat — show a card ex
 ## 12. Files to create / modify
 
 New:
-- `lib/services/finance-tools.ts`
+- ~~`lib/services/finance-tools.ts`~~ **DONE**
 - `lib/services/finance-chat.ts`
 - `lib/services/finance-chat-prompt.ts`
 - `lib/chat/sseClient.ts`
@@ -401,8 +401,8 @@ Do not modify:
 
 ## 13. Suggested build order
 
-1. ~~Migration + RLS.~~ **Done** — `chat_sessions` and `chat_messages` tables plus RLS policies applied directly via the Supabase SQL editor. Start from step 2.
-2. `finance-tools.ts` — implement + unit test each function against a seeded local Supabase or a mocked client. Aim for edge cases: zero transactions, single-bank, multi-bank, boundary dates.
+1. ~~Migration + RLS.~~ **Done** — `chat_sessions` and `chat_messages` tables plus RLS policies applied directly via the Supabase SQL editor.
+2. ~~`finance-tools.ts`.~~ **Done** — all 10 tool functions implemented in `lib/services/finance-tools.ts`, backed by the six Postgres RPCs from §5a (applied via the SQL editor). `FINANCE_TOOLS` registry and `FinanceToolName` type exported. Known follow-up: `compareRanges` with `groupBy: 'bank'` still uses JS aggregation and can hit the 1000-row cap on heavy users — track as a v1.1 improvement (add a `get_spending_by_bank` RPC and route the branch through it). Recommended next: write `scripts/test-finance-tools.ts` (mirror `scripts/simple-test.ts`) to smoke-test each function against a real logged-in account before wiring Gemini.
 3. `finance-chat.ts` + prompt + tool declarations. Write a non-streaming test that runs a full Q&A end-to-end.
 4. `/api/chat` route with streaming.
 5. Session CRUD endpoints.

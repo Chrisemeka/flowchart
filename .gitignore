@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#files
+.ASK_YOUR_FINANCES_SPEC.md

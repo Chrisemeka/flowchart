@@ -10,7 +10,7 @@ type TxRow = {
   id: string;
   date: string;
   amount: string | number;
-  type: 'Debit' | 'Credit';
+  type: string; // DB stores 'DEBIT'/'CREDIT'; we normalize in the wrapper
   category: string;
   clean_name: string | null;
   narration: string | null;
@@ -239,7 +239,7 @@ export async function getTransactions(
     .limit(fetchLimit);
 
   if (args.category)  query = query.eq('category', args.category);
-  if (args.type)      query = query.eq('type', args.type);
+  if (args.type)      query = query.eq('type', args.type.toUpperCase()); // DB stores 'DEBIT'/'CREDIT'
   if (args.bank)      query = query.eq('statements.bank_name', args.bank);
   if (args.minAmount != null) query = query.gte('amount', args.minAmount);
   if (args.maxAmount != null) query = query.lte('amount', args.maxAmount);
@@ -257,11 +257,12 @@ export async function getTransactions(
   return {
     transactions: kept.map(r => {
       const s = Array.isArray(r.statements) ? r.statements[0] : r.statements;
+      const upper = String(r.type).toUpperCase();
       return {
         id:          r.id,
         date:        r.date,
         amount:      Number(r.amount),
-        type:        r.type,
+        type:        (upper === 'CREDIT' ? 'Credit' : 'Debit') as 'Debit' | 'Credit',
         category:    r.category,
         description: r.clean_name || r.narration || '',
         bank:        s?.bank_name ?? 'Unknown',
@@ -300,7 +301,7 @@ export async function compareRanges(
         .from('transactions')
         .select('amount, statements!inner(user_id, bank_name)')
         .eq('statements.user_id', userId)
-        .eq('type', 'Debit')
+        .eq('type', 'DEBIT') // DB stores uppercase
         .gte('date', range.startDate)
         .lte('date', range.endDate);
       if (error) throw error;

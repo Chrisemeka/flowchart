@@ -65,6 +65,12 @@ export default function DashboardLayout({
                                 >
                                     Compare
                                 </Link>
+                                <Link
+                                    href="/dashboard/chat"
+                                    className={`${isActive('/dashboard/chat')} inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200`}
+                                >
+                                    Ask your finances
+                                </Link>
                             </div>
                         </div>
                         <div className="-mr-2 flex items-center sm:hidden">
@@ -136,6 +142,13 @@ export default function DashboardLayout({
                         >
                             Compare
                         </Link>
+                        <Link
+                            href="/dashboard/chat"
+                            className={`${isMobileActive('/dashboard/chat')} block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Ask your finances
+                        </Link>
                     </div>
                 </div>
             </nav>
@@ -147,12 +160,14 @@ export default function DashboardLayout({
                             {pathname === '/dashboard' ? 'Upload Statement' :
                                 pathname === '/dashboard/history' ? 'Statement History' :
                                     pathname === '/dashboard/compare' ? 'Compare Statements' :
-                                        'Statement Details'}
+                                        pathname === '/dashboard/chat' ? 'Ask Your Finances' :
+                                            'Statement Details'}
                         </h1>
                         <PageInfo content={
                             pathname === '/dashboard' ? "Upload your bank statement PDF here. The system will parse the transactions from Access Bank statements and provide a visual analysis of your income and expenses." :
                                 pathname === '/dashboard/history' ? "View a chronological list of all your uploaded statements. Click on any item to view its detailed breakdown, including transaction lists and charts." :
                                     pathname === '/dashboard/compare' ? "Select two statements from your history to compare them side-by-side. This is useful for tracking changes in your spending habits or income over time." :
+                                    pathname === '/dashboard/chat' ? "Ask natural-language questions about your uploaded statements — spending by category, top merchants, month-to-month comparisons — and get answers grounded in your real transaction data." :
                                         "View detailed analysis for this specific statement, including categorization of expenses and income sources."
                         } />
                     </div>

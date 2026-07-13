@@ -18,7 +18,6 @@ type TxRow = {
 };
 
 import { SupabaseClient } from '@supabase/supabase-js';
-import { TRANSACTION_CATEGORIES } from '../constants';
 
 export type DateRange = { startDate: string; endDate: string };
 
@@ -61,7 +60,8 @@ export async function getSpendingByCategory(
 
   if (error) throw error;
 
-  const row = (data as any[])?.[0] ?? { total: 0, count: 0 };
+  const row = (data as { total: number | string; count: number | string }[] | null)?.[0]
+    ?? { total: 0, count: 0 };
   return {
     total: Number(row.total),
     count: Number(row.count),
@@ -158,7 +158,8 @@ export async function getIncomeVsExpense(
   });
   if (error) throw error;
 
-  const row = (data as any[])?.[0] ?? { income: 0, expense: 0 };
+  const row = (data as { income: number | string; expense: number | string }[] | null)?.[0]
+    ?? { income: 0, expense: 0 };
   const income  = Number(row.income);
   const expense = Number(row.expense);
   return { income, expense, net: income - expense };
@@ -306,10 +307,15 @@ export async function compareRanges(
         .lte('date', range.endDate);
       if (error) throw error;
 
+      type BankRow = {
+        amount: number | string;
+        statements: { bank_name: string } | { bank_name: string }[] | null;
+      };
       const groups: Record<string, number> = {};
       let total = 0;
-      for (const row of data ?? []) {
-        const bank = (row as any).statements?.bank_name ?? 'Unknown';
+      for (const row of (data ?? []) as BankRow[]) {
+        const s = Array.isArray(row.statements) ? row.statements[0] : row.statements;
+        const bank = s?.bank_name ?? 'Unknown';
         const amt = Number(row.amount);
         groups[bank] = (groups[bank] ?? 0) + amt;
         total += amt;

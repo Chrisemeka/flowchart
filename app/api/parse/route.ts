@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-// ❌ DO NOT statically import the service here!
-// import { processBankStatement } from '@/lib/services/bank-statement'; 
+// This is the HTTP request handler for the /api/parse route. It handles POST requests to parse bank statements.
 
 export async function POST(request: Request) {
   try {

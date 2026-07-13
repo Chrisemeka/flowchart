@@ -84,13 +84,13 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
           bank: bankName,
           transactions: parseFirstBankPDF(pageTexts)
         };
-      case 'PalmPay':  // <--- ADD THIS BLOCK
+      case 'PalmPay':  
         return {
           status: 'success',
           bank: bankName,
           transactions: parsePalmPayPDF(pageTexts)
         };
-      case 'OPay': // <--- NEW
+      case 'OPay':
         return {
           status: 'success',
           bank: bankName,

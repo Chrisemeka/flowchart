@@ -4,7 +4,7 @@ Flowchart is a financial analysis tool for parsing, visualizing, and categorizin
 
 ## Features
 
-- **Multi-bank PDF parsing** — Upload a statement PDF and the engine automatically detects the issuing bank and extracts transactions. Currently supported: **Access Bank, First Bank, Zenith Bank, Union Bank, Kuda Bank, OPay, and PalmPay**.
+- **Multi-bank PDF parsing** — Upload a statement PDF and the engine automatically detects the issuing bank and extracts transactions. Currently supported: **Access Bank, First Bank, Zenith Bank, Union Bank, Kuda Bank, OPay, GTBANK, and PalmPay**.
 - **AI categorization** — Transactions are classified with **Google Gemini (gemini-2.5-flash)** into 12 categories (Food & Dining, Transport, Bank Fees & Taxes, Income, etc.). Manual override is supported for any transaction.
 - **Interactive dashboard** — Income vs. expenditure over time, category breakdown, and spending summaries powered by Recharts.
 - **Statement history** — Every uploaded statement is stored per user; revisit any month's analysis at any time.
@@ -168,7 +168,7 @@ flowchart/
 
 ## Development Status
 
-Flowchart is under active development. The parsing engine currently supports seven Nigerian bank/finance platforms — Access Bank, First Bank, Zenith Bank, Union Bank, Kuda Bank, OPay, and PalmPay — with more planned. Parser accuracy depends on the PDF being digital (not a scanned image); image-based statements are rejected with a clear error.
+Flowchart is under active development. The parsing engine currently supports seven Nigerian bank/finance platforms — Access Bank, First Bank, Zenith Bank, Union Bank, Kuda Bank, OPay, GTbank, and PalmPay — with more planned. Parser accuracy depends on the PDF being digital (not a scanned image); image-based statements are rejected with a clear error.
 
 ## License
 

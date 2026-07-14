@@ -20,7 +20,18 @@ export function detectSource(filename = '', content = ''): string {
     return 'Zenith Bank';
   }
 
-  // 3. Union Bank
+  // 3. GTBank (Guaranty Trust) — GTCrea8/GTWorld are GTBank-specific product markers
+  if (
+    lowerFilename.includes('gtbank') ||
+    /Guaranty\s+Trust/i.test(content) ||
+    /GTBank/i.test(content) ||
+    /GTCrea8/i.test(content) ||
+    /VIA\s+GTWORLD/i.test(content)
+  ) {
+    return 'GTBank';
+  }
+
+  // 4. Union Bank
   if (
     lowerFilename.includes('union') ||
     /Union\s+Bank\s+of\s+Nigeria/i.test(content) ||

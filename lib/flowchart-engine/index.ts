@@ -16,6 +16,7 @@ import { parseZenithBankPDF } from './parsers/zenith';
 import { parseKudaBankPDF } from './parsers/kuda';
 import { parseUnionBankPDF } from './parsers/union';
 import { parseFirstBankPDF } from './parsers/firstbank';
+import { parseGTBankPDF, type GTItem } from './parsers/gtbank';
 
 export async function parseBankStatement(fileBuffer: ArrayBuffer) {
   try {
@@ -37,18 +38,24 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
     // 4. Extract Text Page by Page
     const maxPages = 10;
     const pageTexts: string[] = [];
+    // Positional items per page (x, y) for parsers that need table geometry (GTBank).
+    const pageItems: GTItem[][] = [];
 
     for (let i = 1; i <= Math.min(pdf.numPages, maxPages); i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
 
+      const items = textContent.items.filter(
+        (item): item is Extract<typeof item, { str: string }> =>
+          'str' in item && typeof item.str === 'string'
+      );
+
       // JOIN STRATEGY:
       // Use '  ' (double space) to safely separate columns visually
-      const text = textContent.items
-        .map((item) => ('str' in item && typeof item.str === 'string' ? item.str : ''))
-        .join('  ');
-
-      pageTexts.push(text);
+      pageTexts.push(items.map((item) => item.str).join('  '));
+      pageItems.push(
+        items.map((item) => ({ str: item.str, x: item.transform[4], y: item.transform[5] }))
+      );
     }
 
     const fullText = pageTexts.join('\n\n'); // Separate pages with newlines
@@ -113,6 +120,12 @@ export async function parseBankStatement(fileBuffer: ArrayBuffer) {
           status: 'success',
           bank: bankName,
           transactions: parseUnionBankPDF(pageTexts)
+        };
+      case 'GTBank':
+        return {
+          status: 'success',
+          bank: bankName,
+          transactions: parseGTBankPDF(pageItems)
         };
       default:
         return {
